@@ -1,0 +1,15 @@
+USE ischool;
+##Answer 1
+SELECT *
+FROM people
+ORDER BY 2 ASC;
+##Answer 2
+SELECT CONCAT(fname," " ,lname) AS 'Full Name' , email As 'Email', title As
+'Title', start_date As 'Start Date'
+FROM people;
+##Answer 3
+SELECT address_id, street , city, state, zipcode , country
+FROM addresses
+WHERE (LEFT(country , 1) >= 'A' AND LEFT(country , 1) <= 'C') AND LEFT(country,
+1) IS NOT NULL
+ORDER BY 6 ASC;
