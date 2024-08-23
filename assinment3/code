@@ -1,0 +1,96 @@
+USE `ischool`;
+##qestion 1
+##getting data
+SELECT
+l.building_name,
+CONCAT(p.lname, ', ', p.fname) AS Instructor, ##getting data
+COUNT(c.course_id) AS course_count
+##where we ge them from
+FROM
+people p
+JOIN
+course_sections c ON p.person_id = c.instructor_id
+JOIN
+locations l ON c.location_id = l.location_id
+##grouping them
+GROUP BY
+l.building_name, Instructor WITH ROLLUP
+##making data meet coditions
+HAVING
+(l.building_name IS NOT NULL OR Instructor IS NOT NULL)
+AND (course_count > 0 OR Instructor IS NULL)
+ORDER BY
+l.building_name,
+Instructor IS NULL,
+Instructor;
+##qestion 2
+##creating table
+DROP TABLE IF EXISTS q2;
+CREATE TABLE q2 (
+person_id INT,
+address_id INT,
+FOREIGN KEY (person_id) REFERENCES people(person_id),
+FOREIGN KEY (address_id) REFERENCES addresses(address_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+##filling table
+SELECT
+p.person_id,
+CONCAT(p.lname, ', ', p.fname) AS full_name,
+COUNT(e.section_id) AS num_courses
+FROM
+people p
+LEFT JOIN
+enrollments e ON p.person_id = e.person_id
+JOIN
+course_sections cs ON e.section_id = cs.section_id
+WHERE
+(cs.year = 2021 OR cs.year = 2022)
+GROUP BY
+p.person_id, full_name
+ORDER BY
+num_courses DESC,
+p.person_id DESC;
+##qestion 3
+SELECT
+p.person_id,
+CONCAT(p.lname, ', ', p.fname) AS full_name,
+COUNT(e.section_id) AS num_courses
+FROM
+people p
+LEFT JOIN
+enrollments e ON p.person_id = e.person_id
+JOIN
+course_sections cs ON e.section_id = cs.section_id
+WHERE
+(cs.year = 2021 OR cs.year = 2022)
+GROUP BY
+p.person_id, full_name
+ORDER BY
+num_courses DESC,
+full_name ASC;
+##qestion 4
+WITH CourseCounts AS (
+SELECT
+p.person_id,
+CONCAT(p.lname, ', ', p.fname) AS full_name,
+COUNT(e.section_id) AS num_courses
+FROM
+people p
+LEFT JOIN
+enrollments e ON p.person_id = e.person_id
+JOIN
+course_sections cs ON e.section_id = cs.section_id
+WHERE
+(cs.year = 2021 OR cs.year = 2022)
+GROUP BY
+p.person_id, full_name
+)
+SELECT
+person_id,
+full_name,
+num_courses
+FROM
+CourseCounts
+ORDER BY
+num_courses DESC,
+full_name ASC;
