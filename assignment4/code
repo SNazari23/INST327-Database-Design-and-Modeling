@@ -1,0 +1,101 @@
+USE ischool;
+##q1
+-- Drop the existing copy table if it exists
+DROP TABLE IF EXISTS course_sections_copy;
+-- Create a copy of the course_sections table
+CREATE TABLE course_sections_copy LIKE course_sections;
+-- Insert all data from course_sections into course_sections_copy
+INSERT INTO course_sections_copy
+SELECT *
+FROM course_sections;
+-- Verify the tables match
+SELECT * FROM course_sections;
+SELECT * FROM course_sections_copy;
+-- Insert the new rows into course_sections_copy
+INSERT INTO course_sections_copy
+(section_id, section_number, semester, year, meeting_days, start_time, end_time,
+course_id, instructor_id,
+delivery_id, format_id, location_id)
+##find refers to the course Id to the course inst326
+VALUES
+(200, '0201', 'Fall', 2024, 'W', '09:00', '12:00', 13, 132466040, 1, 1, 41),
+(201, '0202', 'Fall', 2024, 'W', '09:00', '12:00', 13, 132466040, 1, 1, 41),
+(202, '0201', 'Spring', 2025, 'M', '11:30', '12:45', 32, 132466116, NULL, NULL,
+51),
+(203, '0202', 'Spring', 2025, 'M', '11:00', '12:45', 32, 132466116, NULL, NULL,
+51);
+-- Check if the rows have been inserted correctly
+SELECT *
+FROM course_sections_copy;
+##q2
+SET SQL_SAFE_UPDATES = 0;
+UPDATE course_sections_copy
+SET delivery_id = 2, format_id = 3
+WHERE course_id = 'INST414'
+AND semester = 'Spring 2025'
+AND (section = '0201' OR section = '0202');
+SELECT *
+FROM course_sections_copy;
+##q3
+##make sure i need to be select stamemnt
+SELECT csc.section_id,
+csc.section_number,
+concat(course_code,course_number) AS courses,
+concat (csc.semester,csc.year) AS Semester
+FROM course_sections_copy csc
+JOIN courses c ON csc.course_id = c.course_id
+ORDER BY csc.semester
+LIMIT 250;
+##make a condition then a delete
+DELETE FROM course_sections_copy
+WHERE course_id IN (
+SELECT course_id
+FROM courses
+WHERE course_code = 'INST' AND course_number='326'
+)
+AND semester = 'Fall'
+AND year = 2024;
+SELECT csc.section_id,
+csc.section_number,
+concat(course_code,course_number) AS courses,
+concat (csc.semester,csc.year) AS Semester
+FROM course_sections_copy csc
+JOIN courses c ON csc.course_id = c.course_id
+ORDER BY csc.semester
+LIMIT 250;
+##Q4
+#Assignment 4 Question 4 Partial Script
+DROP VIEW IF EXISTS staff_employment;
+CREATE VIEW staff_employment AS
+SELECT CONCAT(p.fname, ' ', p.lname) AS 'Full Name',
+c.classification AS Classification,
+p.department AS Department,
+p.start_date AS 'Start Date',
+TIMESTAMPDIFF(MONTH, p.start_date, '2024-08-14') AS 'Months of Employment'
+FROM people p
+JOIN person_classifications pc USING(person_id)
+JOIN classification c USING(classification_id)
+WHERE p.department = 'ISCHOOL' AND c.classification='Faculty'
+ORDER BY 'Months of Employment';
+SELECT * FROM staff_employment;
+##qestion 5
+#Assignment 4 Question 5 Partial Script
+DROP PROCEDURE IF EXISTS faculty_in_state;
+DELIMITER $$
+CREATE PROCEDURE faculty_in_state(
+state_param VARCHAR(2)
+)
+BEGIN
+SELECT DISTINCT
+CONCAT(p.fname, ' ', p.lname) AS 'faculty',
+p.title,
+p.department AS department,
+CONCAT(a.city, ', ', a.state) AS location
+FROM people p
+JOIN person_addresses pa ON p.person_id = pa.person_id
+JOIN addresses a ON pa.address_id = a.address_id
+WHERE a.state = state_param
+ORDER BY faculty DESC, location;
+END $$
+DELIMITER ;
+CALL faculty_in_state('NY');
