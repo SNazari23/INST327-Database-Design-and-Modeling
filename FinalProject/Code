@@ -1,0 +1,98 @@
+USE campaign_finances;
+
+USE campaign_finances;
+
+-- 1. Who are the top 10 payees by total payment amount?
+CREATE OR REPLACE VIEW highest_paid AS
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY SUM(payment_amount) DESC) AS countdown,
+    p.payee_name AS Payee, 
+    ROUND(SUM(pm.payment_amount), 2) AS total_payment  
+FROM 
+    payment pm
+JOIN 
+    payee p ON pm.transaction_id = p.transaction_id
+GROUP BY 
+    p.payee_name
+ORDER BY 
+    total_payment DESC
+LIMIT 10;
+
+-- Query the highest_paid view
+SELECT * FROM highest_paid;
+
+-- 2. What are the total campaign expenditures for each year?
+CREATE OR REPLACE VIEW yearly_expenditures AS
+SELECT 
+    pm.payement_year, 
+    ROUND(SUM(pm.payment_amount), 2) AS total_payment 
+FROM 
+    payment pm
+GROUP BY 
+    pm.payement_year
+ORDER BY 
+    pm.payement_year ASC;
+
+-- Query the yearly expenditures view
+SELECT * FROM yearly_expenditures;
+-- 3. Which expenditure types account for the highest spending?
+CREATE OR REPLACE VIEW expenditures_by_type AS
+SELECT 
+    e.expenditure_type, 
+    ROUND(SUM(pm.payment_amount), 2) AS total_payment 
+FROM 
+    payment pm
+JOIN 
+    expenditure e ON pm.transaction_id = e.transactionn_id
+GROUP BY 
+    e.expenditure_type
+ORDER BY 
+    total_payment DESC;
+
+-- Query the expenditures_by_type view
+SELECT * FROM expenditures_by_type;
+
+-- 4. What are the top 3 cities with the highest total campaign expenditures?
+CREATE OR REPLACE VIEW top_cities_expenditures AS
+SELECT 
+    TRIM(SUBSTRING_INDEX(p.city_state_zip, ',', 1)) AS City,
+    ROUND(SUM(pm.payment_amount), 2) AS Total_Payment
+FROM 
+    payment pm
+JOIN 
+    payee p ON pm.transaction_id = p.transaction_id
+GROUP BY 
+    City
+ORDER BY 
+    Total_Payment DESC
+LIMIT 3;
+
+-- Query the top_cities_expenditures view
+SELECT * FROM top_cities_expenditures;
+
+-- 5. What is the total amount of political obligations reported?
+CREATE OR REPLACE VIEW obligations_total AS
+SELECT 
+    COUNT(*) AS total_obligations
+FROM 
+    expenditure e
+WHERE 
+    e.travel_outside_tx = 'yes';
+
+-- Query the obligations_total view
+SELECT * FROM obligations_total;
+
+-- 6. How many payments were made by each type of payee (individual vs. entity)?
+CREATE OR REPLACE VIEW payee_type AS
+SELECT 
+    p.payee_type,
+    COUNT(*) AS Number_Of_Payments
+FROM 
+    payee p
+JOIN 
+    payment pm ON p.transaction_id = pm.transaction_id
+GROUP BY 
+    p.payee_type;
+
+-- Query the payee_type view
+SELECT * FROM payee_type;
