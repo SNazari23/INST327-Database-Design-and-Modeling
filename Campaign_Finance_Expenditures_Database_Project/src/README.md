@@ -3,7 +3,7 @@
 Screenshot 1: The 1st view is named highest_Paid, and it is used to identify both the highest-paid and lowest-paid donors to the campaign. 
 <img width="1440" alt="View1" src="https://github.com/user-attachments/assets/0eb1c7fb-f281-4ab1-8c4e-1b15a0edca2d" />
 Screenshot 2: The 2nd view, yearly_expenditures, identifies the total money raised in a campaign year.
-<img width="1440" alt="View2" src="https://github.com/user-attachments/assets/071e2375-7fb6-402b-970d-223ac9f2fed8" />
+<img width="1440" alt="Screenshot 2025-04-03 at 10 32 22 PM" src="https://github.com/user-attachments/assets/c171bdd1-a6ba-4aa7-a067-79b3c1507af1" />
 Screenshot 3: The 3rd view, expenditures_by_type, identifies the total money by expenditure type.
 <img width="1440" alt="View3" src="https://github.com/user-attachments/assets/626b4c9d-7713-4d44-b35b-afca52d76737" /> 
 Screenshot 4: The 4th view, top_cities_expenditures, identifies the highest-paying cities.
